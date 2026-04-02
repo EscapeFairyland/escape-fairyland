@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Escape Fairyland — alternatywny rock z nutką elektro. Zespół muzyczny z Krakowa.">
+  <meta name="keywords" content="Escape Fairyland, zespół muzyczny, alternative rock, electro, Kraków">
+  <meta name="author" content="Escape Fairyland">
+  <meta name="theme-color" content="#050505">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <title>Escape Fairyland — Alternative Rock / Electro</title>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎸</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="#hero" class="nav-logo">
+        Escape <span class="highlight">Fairyland</span>
+      </a>
+      <div class="nav-links">
+        <a href="#hero" class="active">Start</a>
+        <a href="#about">O nas</a>
+        <a href="#listen">Muzyka</a>
+        <a href="#contact">Kontakt</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#hero">Start</a>
+    <a href="#about">O nas</a>
+    <a href="#listen">Muzyka</a>
+    <a href="#contact">Kontakt</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="line top">Escape</span>
+        <span class="line bottom">Fairyland</span>
+      </h1>
+      <p class="hero-description">
+        Alternatywny rock z nutką elektro — brzmimy tak, jak nikt inny.
+      </p>
+      <div class="hero-socials">
+        <a href="https://open.spotify.com/artist/5g13TIzOenSDAauaqFwP8p?si=SG1vHJUnRaSTlFirmbIrJQ" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Spotify">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+          <span>Spotify</span>
+        </a>
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <span>Instagram</span>
+        </a>
+        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#050505"/></svg>
+          <span>YouTube</span>
+        </a>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <span>Facebook</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-image reveal">
+          <img src="assets/album-cover.png" alt="Escape Fairyland — okładka Pocket Jokers">
+        </div>
+        <div class="about-text">
+          <p class="about-label reveal">Kim jesteśmy</p>
+          <h2 class="reveal reveal-delay-1">
+            Escape <span class="dim">Fairyland</span>
+          </h2>
+          <p class="reveal reveal-delay-2">
+            Jesteśmy zespołem z Krakowa — gramy alternatywnego rocka z elektronicznymi elementami. Łączymy surowe gitary z syntezatorami i tworzymy brzmienie, które trudno zaszufladkować.
+          </p>
+          <p class="reveal reveal-delay-3">
+            Na scenie dajemy z siebie wszystko — każdy występ to energia, improwizacja i kontakt z publicznością.
+          </p>
+          <div class="genre-tags reveal reveal-delay-3">
+            <span class="genre-tag">Alternative Rock</span>
+            <span class="genre-tag">Electro</span>
+            <span class="genre-tag">Rock</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTEN -->
+  <section class="listen" id="listen">
+    <div class="container">
+      <div class="listen-header reveal">
+        <p class="about-label">Nasze utwory</p>
+        <h2>Track <span class="dim">List</span></h2>
+      </div>
+
+      <div class="track-player reveal">
+        <div class="track-player-info">
+          <div class="track-player-number">—</div>
+          <div class="track-player-details">
+            <h3 class="track-player-title">Wybierz utwór</h3>
+            <p class="track-player-meta">
+              <span>Escape Fairyland</span>
+              <span class="meta-dot">•</span>
+              <span>2024</span>
+            </p>
+          </div>
+        </div>
+        <div class="track-player-audio">
+          <audio controls preload="metadata" id="main-audio">
+            Twoja przeglądarka nie obsługuje odtwarzacza audio.
+          </audio>
+        </div>
+      </div>
+
+      <div class="track-list reveal reveal-delay-1">
+        <div class="track-item" data-src="assets/Sprytne_Śniadanka_Intro.mp3" data-title="Sprytne Śniadanka Intro" data-number="01">
+          <button class="track-item-play" aria-label="Odtwórz Sprytne Śniadanka Intro">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <span class="track-item-number">01</span>
+          <div class="track-item-details">
+            <div class="track-item-title">Sprytne Śniadanka Intro</div>
+            <div class="track-item-info">Escape Fairyland • 2024</div>
+          </div>
+          <span class="track-item-duration">1:44</span>
+        </div>
+
+        <div class="track-item" data-src="assets/Dumbo.mp3" data-title="Dumbo" data-number="02">
+          <button class="track-item-play" aria-label="Odtwórz Dumbo">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <span class="track-item-number">02</span>
+          <div class="track-item-details">
+            <div class="track-item-title">Dumbo</div>
+            <div class="track-item-info">Escape Fairyland • 2024</div>
+          </div>
+          <span class="track-item-duration">1:36</span>
+        </div>
+
+        <div class="track-item" data-src="assets/Harvest_Fest.mp3" data-title="Harvest Fest" data-number="03">
+          <button class="track-item-play" aria-label="Odtwórz Harvest Fest">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <span class="track-item-number">03</span>
+          <div class="track-item-details">
+            <div class="track-item-title">Harvest Fest</div>
+            <div class="track-item-info">Escape Fairyland • 2024</div>
+          </div>
+          <span class="track-item-duration">4:00</span>
+        </div>
+
+        <div class="track-item" data-src="assets/Hill_Climb_Racing_(im touching this guy).mp3" data-title="Hill Climb Racing (im touching this guy)" data-number="04">
+          <button class="track-item-play" aria-label="Odtwórz Hill Climb Racing">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <span class="track-item-number">04</span>
+          <div class="track-item-details">
+            <div class="track-item-title">Hill Climb Racing (im touching this guy)</div>
+            <div class="track-item-info">Escape Fairyland • 2024</div>
+          </div>
+          <span class="track-item-duration">3:39</span>
+        </div>
+
+        <div class="track-item" data-src="assets/Jak_Śię_Ślizgasz_To_Się_Ślizgasz 2.mp3" data-title="Jak Śię Ślizgasz To Się Ślizgasz 2" data-number="05">
+          <button class="track-item-play" aria-label="Odtwórz Jak Śię Ślizgasz To Się Ślizgasz 2">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <span class="track-item-number">05</span>
+          <div class="track-item-details">
+            <div class="track-item-title">Jak Śię Ślizgasz To Się Ślizgasz</div>
+            <div class="track-item-info">Escape Fairyland • 2024</div>
+          </div>
+          <span class="track-item-duration">3:41</span>
+        </div>
+
+        <div class="track-item" data-src="assets/Never_Past_Bedtime.mp3" data-title="Never Past Bedtime" data-number="06">
+          <button class="track-item-play" aria-label="Odtwórz Never Past Bedtime">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <span class="track-item-number">06</span>
+          <div class="track-item-details">
+            <div class="track-item-title">Never Past Bedtime</div>
+            <div class="track-item-info">Escape Fairyland • 2024</div>
+          </div>
+          <span class="track-item-duration">2:40</span>
+        </div>
+
+        <div class="track-item" data-src="assets/Pocket_Jokers.mp3" data-title="Pocket Jokers" data-number="07">
+          <button class="track-item-play" aria-label="Odtwórz Pocket Jokers">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </button>
+          <span class="track-item-number">07</span>
+          <div class="track-item-details">
+            <div class="track-item-title">Pocket Jokers</div>
+            <div class="track-item-info">Escape Fairyland • 2024</div>
+          </div>
+          <span class="track-item-duration">2:50</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="contact-header">
+        <p class="about-label reveal">Kontakt</p>
+        <h2 class="reveal reveal-delay-1">Napisz do nas</h2>
+        <p class="reveal reveal-delay-2">
+          Chcesz nas na swoim wydarzeniu? Masz pytanie? Śmiało, odezwij się.
+        </p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-card reveal">
+            <div class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <h4 class="contact-card-title">Email</h4>
+              <p class="contact-card-text">
+                <a href="mailto:kontakt@escapefairyland.pl">kontakt@escapefairyland.pl</a>
+              </p>
+            </div>
+          </div>
+
+          <div class="contact-card reveal reveal-delay-1">
+            <div class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div>
+              <h4 class="contact-card-title">Telefon</h4>
+              <p class="contact-card-text">
+                <a href="tel:+48123456789">+48 123 456 789</a>
+              </p>
+            </div>
+          </div>
+
+          <div class="contact-card reveal reveal-delay-2">
+            <div class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <h4 class="contact-card-title">Lokalizacja</h4>
+              <p class="contact-card-text">Kraków, Polska</p>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="reveal reveal-delay-2">
+          <form class="contact-form" id="contact-form">
+            <div class="form-group">
+              <label class="form-label" for="name">Imię</label>
+              <input type="text" class="form-input" id="name" name="name" placeholder="Jan Kowalski" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input type="email" class="form-input" id="email" name="email" placeholder="jan@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="message">Wiadomość</label>
+              <textarea class="form-textarea" id="message" name="message" placeholder="Napisz do nas..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary form-submit">Wyślij</button>
+          </form>
+          <div class="form-success">
+            ✓ Wiadomość wysłana. Odezwiemy się wkrótce.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-text">© 2025 Escape Fairyland</p>
+    </div>
+  </footer>
+
+  <button class="back-to-top" aria-label="Wróć na górę">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
