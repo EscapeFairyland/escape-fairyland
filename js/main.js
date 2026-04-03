@@ -76,7 +76,8 @@ class ParticleSystem {
 
     // More aggressive scaling based on bass and average frequency
     const bassScale = 1 + Math.pow(bass / 255, 2) * 2; 
-    const speedScale = 1 + (averageFrequency / 255) * 2;
+    // Speed heavily amplified during bass drops (kick drums / basslines)
+    const speedScale = 1 + (averageFrequency / 255) * 1.5 + Math.pow(bass / 255, 3) * 12;
     const currentMaxDist = 100 + (bass / 255) * 200;
 
     for (const p of this.particles) {
@@ -287,6 +288,9 @@ class ContactForm {
 class TrackPlayer {
   constructor() {
     this.audio = document.getElementById('main-audio');
+    if (this.audio) {
+      this.audio.volume = 0.3;
+    }
     this.trackItems = Array.from(document.querySelectorAll('.track-item[data-src]'));
     this.playerTitle = document.querySelector('.track-player-title');
     this.playerNumber = document.querySelector('.track-player-number');
@@ -321,6 +325,13 @@ class TrackPlayer {
     this.fullNextBtn = document.getElementById('full-next-btn');
     this.fullLoopBtn = document.getElementById('full-loop-btn');
     
+    // Hero Player UI
+    this.heroPlayBtn = document.getElementById('hero-play-btn');
+    if (this.heroPlayBtn) {
+      this.heroIconPlay = this.heroPlayBtn.querySelector('.icon-play');
+      this.heroIconPause = this.heroPlayBtn.querySelector('.icon-pause');
+    }
+
     if (this.fullPlayBtn) {
       this.fullIconPlay = this.fullPlayBtn.querySelector('.icon-play');
       this.fullIconPause = this.fullPlayBtn.querySelector('.icon-pause');
@@ -341,9 +352,15 @@ class TrackPlayer {
         const source = this.audioContext.createMediaElementSource(this.audio);
         const analyzer = this.audioContext.createAnalyser();
         
+        this.gainNode = this.audioContext.createGain();
+        
         analyzer.fftSize = 256;
         source.connect(analyzer);
-        analyzer.connect(this.audioContext.destination);
+        analyzer.connect(this.gainNode);
+        this.gainNode.connect(this.audioContext.destination);
+        
+        if (this.audio) this.audio.volume = 1;
+        this.gainNode.gain.value = this.currentVolume !== undefined ? this.currentVolume : 0.3;
         
         const bufferLength = analyzer.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
@@ -405,8 +422,29 @@ class TrackPlayer {
   }
 
   bindEvents() {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        this.initAudioContext();
+        if (this.audio) this.audio.play();
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (this.audio) this.audio.pause();
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        this.playPrev();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        this.playNext();
+      });
+    }
+
     this.trackItems.forEach(item => {
       item.addEventListener('click', (e) => {
+        if (e.target.closest('.track-item-download')) {
+          e.stopPropagation(); // Only download, do not play
+          return;
+        }
+
         // Prevent double-firing if the button itself is clicked
         if (e.target.closest('.track-item-play')) {
           this.toggleTrack(item);
@@ -415,6 +453,14 @@ class TrackPlayer {
         }
       });
     });
+
+    if (this.heroPlayBtn) {
+      this.heroPlayBtn.addEventListener('click', () => {
+        if (this.trackItems.length > 0) {
+          this.toggleTrack(this.trackItems[0]);
+        }
+      });
+    }
 
     if (this.stickyPlayBtn) {
       this.stickyPlayBtn.addEventListener('click', () => {
@@ -463,6 +509,64 @@ class TrackPlayer {
       this.stickyLoopBtn.addEventListener('click', () => this.toggleLoop());
     }
 
+    // Volume popup logic
+    this.volumeWrappers = document.querySelectorAll('.volume-wrapper');
+    this.volumeBtns = document.querySelectorAll('.volume-toggle-btn');
+    
+    this.volumeBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wrapper = btn.closest('.volume-wrapper');
+        const isExpanded = wrapper.classList.contains('expanded');
+        this.volumeWrappers.forEach(w => w.classList.remove('expanded'));
+        if (!isExpanded) {
+          wrapper.classList.add('expanded');
+        }
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.volume-wrapper')) {
+        this.volumeWrappers.forEach(w => w.classList.remove('expanded'));
+      }
+    });
+
+    this.stickyVolumeSlider = document.getElementById('sticky-volume-slider');
+    this.fullVolumeSlider = document.getElementById('full-volume-slider');
+    
+    this.currentVolume = this.audio ? this.audio.volume : 0.3;
+
+    const updateVolumeUI = (val) => {
+      this.currentVolume = parseFloat(val);
+      if (this.gainNode) {
+        this.gainNode.gain.value = this.currentVolume;
+      } else if (this.audio) {
+        this.audio.volume = this.currentVolume;
+      }
+
+      const vol = this.currentVolume;
+      if (this.stickyVolumeSlider) this.stickyVolumeSlider.value = vol;
+      if (this.fullVolumeSlider) this.fullVolumeSlider.value = vol;
+      document.querySelectorAll('.vol-wave-1').forEach(w => {
+        w.style.opacity = vol === 0 ? '0' : '1';
+        w.style.transition = 'opacity 0.2s';
+      });
+      document.querySelectorAll('.vol-wave-2').forEach(w => {
+        w.style.opacity = vol < 0.5 ? '0' : '1';
+        w.style.transition = 'opacity 0.2s';
+      });
+    };
+
+    if (this.stickyVolumeSlider) {
+      this.stickyVolumeSlider.addEventListener('input', (e) => updateVolumeUI(e.target.value));
+    }
+    if (this.fullVolumeSlider) {
+      this.fullVolumeSlider.addEventListener('input', (e) => updateVolumeUI(e.target.value));
+    }
+    
+    // Initial sync
+    updateVolumeUI(this.audio ? this.audio.volume : 0.3);
+
     this.stickyProgressContainer = document.getElementById('sticky-progress-container');
     if (this.stickyProgressContainer && this.audio) {
       this.stickyProgressContainer.addEventListener('click', (e) => {
@@ -494,6 +598,10 @@ class TrackPlayer {
             this.fullPlayer.classList.add('hidden');
             this.fullPlayer.classList.remove('is-playing');
           }
+          if (this.heroIconPlay && this.heroIconPause) {
+            this.heroIconPlay.style.display = 'block';
+            this.heroIconPause.style.display = 'none';
+          }
         }
       });
 
@@ -501,6 +609,7 @@ class TrackPlayer {
         if (this.fullPlayer) this.fullPlayer.classList.remove('is-playing');
         if (this.currentTrack) {
           this.setIcon(this.currentTrack, 'play');
+          this.currentTrack.classList.add('is-paused');
         }
         if (this.iconPlay && this.iconPause) {
           this.iconPlay.style.display = 'block';
@@ -510,12 +619,17 @@ class TrackPlayer {
           this.fullIconPlay.style.display = 'block';
           this.fullIconPause.style.display = 'none';
         }
+        if (this.heroIconPlay && this.heroIconPause) {
+          this.heroIconPlay.style.display = 'block';
+          this.heroIconPause.style.display = 'none';
+        }
       });
 
       this.audio.addEventListener('play', () => {
         if (this.fullPlayer) this.fullPlayer.classList.add('is-playing');
         if (this.currentTrack) {
           this.setIcon(this.currentTrack, 'pause');
+          this.currentTrack.classList.remove('is-paused');
         }
         if (this.iconPlay && this.iconPause) {
           this.iconPlay.style.display = 'none';
@@ -524,6 +638,15 @@ class TrackPlayer {
         if (this.fullIconPlay && this.fullIconPause) {
           this.fullIconPlay.style.display = 'none';
           this.fullIconPause.style.display = 'block';
+        }
+        if (this.heroIconPlay && this.heroIconPause) {
+          if (this.currentTrack === this.trackItems[0]) {
+            this.heroIconPlay.style.display = 'none';
+            this.heroIconPause.style.display = 'block';
+          } else {
+            this.heroIconPlay.style.display = 'block';
+            this.heroIconPause.style.display = 'none';
+          }
         }
       });
 
@@ -548,6 +671,46 @@ class TrackPlayer {
         });
       }
     }
+
+    document.addEventListener('keydown', (e) => {
+      // Zignoruj, jeśli użytkownik pisze w formularzu kontaktowym
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+
+      switch(e.key) {
+        case ' ':
+        case 'Spacebar':
+          e.preventDefault();
+          if (this.audio) {
+            this.initAudioContext();
+            if (this.audio.paused) this.audio.play();
+            else this.audio.pause();
+          }
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          this.playNext();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          this.playPrev();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          if (this.audio) {
+            const newVol = Math.min(1, this.currentVolume + 0.1);
+            updateVolumeUI(newVol);
+          }
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          if (this.audio) {
+            const newVol = Math.max(0, this.currentVolume - 0.1);
+            updateVolumeUI(newVol);
+          }
+          break;
+      }
+    });
+
   }
 
   toggleTrack(item) {
@@ -569,11 +732,13 @@ class TrackPlayer {
     // Switch to new track
     if (this.currentTrack) {
       this.currentTrack.classList.remove('playing');
+      this.currentTrack.classList.remove('is-paused');
       this.setIcon(this.currentTrack, 'play');
     }
 
     this.currentTrack = item;
     item.classList.add('playing');
+    item.classList.remove('is-paused');
 
     // Update main player info
     if (this.playerTitle) this.playerTitle.textContent = title;
@@ -588,6 +753,18 @@ class TrackPlayer {
     
     // Update full player title
     if (this.fullTitle) this.fullTitle.textContent = title;
+
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: title,
+        artist: 'Pocket Jokers',
+        album: 'EP 2025',
+        artwork: [
+          { src: 'assets/icon.svg', sizes: '512x512', type: 'image/svg+xml' },
+          { src: 'assets/album-cover.png', sizes: '512x512', type: 'image/png' }
+        ]
+      });
+    }
 
     // Update meta (safe DOM manipulation — no innerHTML)
     if (this.playerMeta) {

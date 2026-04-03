@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Pocket Jokers — alternatywny rock z nutką elektro. Zespół muzyczny z Krakowa.">
+  <meta name="description" content="Pocket Jokers">
   <meta name="keywords" content="Pocket Jokers, zespół muzyczny, alternative rock, electro, Kraków">
   <meta name="author" content="Pocket Jokers">
   <meta name="theme-color" content="#050505">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://formsubmit.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
-  <title>Pocket Jokers — Alternative Rock / Electro</title>
+  <title>Pocket Jokers</title>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎸</text></svg>">
   <link rel="manifest" href="manifest.json">
@@ -53,9 +53,13 @@
         <span class="line top">Pocket</span>
         <span class="line bottom">Jokers</span>
       </h1>
-      <p class="hero-description">
-        Alternatywny rock z nutką elektro — brzmimy tak, jak nikt inny.
-      </p>
+      <div class="hero-buttons">
+        <button id="hero-play-btn" class="btn btn-primary" aria-label="Odtwórz intro">
+          <svg viewBox="0 0 24 24" class="icon-play" width="18" height="18" fill="currentColor" style="display: block;"><polygon points="5,3 19,12 5,21"/></svg>
+          <svg viewBox="0 0 24 24" class="icon-pause" width="18" height="18" fill="currentColor" style="display: none;"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+          <span>Posłuchaj Intro</span>
+        </button>
+      </div>
       <div class="hero-socials">
         <a href="https://open.spotify.com/artist/5g13TIzOenSDAauaqFwP8p?si=SG1vHJUnRaSTlFirmbIrJQ" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Spotify">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
@@ -111,110 +115,151 @@
         <h2>Track List</h2>
       </div>
 
-      <div class="track-player reveal">
-        <div class="track-player-info">
-          <div class="track-player-number">—</div>
-          <div class="track-player-details">
-            <h3 class="track-player-title">Wybierz utwór</h3>
-            <p class="track-player-meta">
-              <span>Pocket Jokers</span>
-              <span class="meta-dot">•</span>
-              <span>2024</span>
-            </p>
-          </div>
-        </div>
-        <div class="track-player-audio">
-          <audio controls preload="metadata" id="main-audio">
-            Twoja przeglądarka nie obsługuje odtwarzacza audio.
-          </audio>
-        </div>
-      </div>
+      <audio preload="metadata" id="main-audio" style="display: none;"></audio>
 
-      <div class="track-list reveal reveal-delay-1">
-        <div class="track-item" data-src="assets/Sprytne_Sniadanka_Intro.mp3" data-title="Sprytne Śniadanka Intro" data-number="01">
-          <button class="track-item-play" aria-label="Odtwórz Sprytne Śniadanka Intro">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          </button>
-          <span class="track-item-number">01</span>
-          <div class="track-item-details">
-            <div class="track-item-title">Sprytne Śniadanka Intro</div>
-            <div class="track-item-info">Pocket Jokers • 2024</div>
+      <div class="track-list-wrapper reveal reveal-delay-1">
+        <div class="track-list-header">
+          <div class="col-num">#</div>
+          <div class="col-title">Tytuł</div>
+          <div class="col-dur">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           </div>
-          <span class="track-item-duration">1:44</span>
         </div>
 
-        <div class="track-item" data-src="assets/Dumbo.mp3" data-title="Dumbo" data-number="02">
-          <button class="track-item-play" aria-label="Odtwórz Dumbo">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          </button>
-          <span class="track-item-number">02</span>
-          <div class="track-item-details">
-            <div class="track-item-title">Dumbo</div>
-            <div class="track-item-info">Pocket Jokers • 2024</div>
+        <div class="track-list">
+          <div class="track-item" data-src="assets/Sprytne_Sniadanka_Intro.mp3" data-title="Sprytne Śniadanka Intro" data-number="01">
+            <div class="col-num">
+              <span class="track-item-number">1</span>
+              <button class="track-item-play" aria-label="Odtwórz Sprytne Śniadanka Intro">
+                <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="track-equalizer"><span></span><span></span><span></span></div>
+            </div>
+            <div class="col-title">
+              <span class="track-item-title-text">Sprytne Śniadanka Intro</span>
+            </div>
+            <div class="col-dur">
+              <a href="assets/Sprytne_Sniadanka_Intro.mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </a>
+              <span class="track-item-duration">1:44</span>
+            </div>
           </div>
-          <span class="track-item-duration">1:36</span>
-        </div>
 
-        <div class="track-item" data-src="assets/Harvest_Fest.mp3" data-title="Harvest Fest" data-number="03">
-          <button class="track-item-play" aria-label="Odtwórz Harvest Fest">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          </button>
-          <span class="track-item-number">03</span>
-          <div class="track-item-details">
-            <div class="track-item-title">Harvest Fest</div>
-            <div class="track-item-info">Pocket Jokers • 2024</div>
+          <div class="track-item" data-src="assets/Dumbo.mp3" data-title="Dumbo" data-number="02">
+            <div class="col-num">
+              <span class="track-item-number">2</span>
+              <button class="track-item-play" aria-label="Odtwórz Dumbo">
+                <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="track-equalizer"><span></span><span></span><span></span></div>
+            </div>
+            <div class="col-title">
+              <span class="track-item-title-text">Dumbo</span>
+            </div>
+            <div class="col-dur">
+              <a href="assets/Dumbo.mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </a>
+              <span class="track-item-duration">1:36</span>
+            </div>
           </div>
-          <span class="track-item-duration">4:00</span>
-        </div>
 
-        <div class="track-item" data-src="assets/Hill_Climb_Racing_(im_touching_this_guy).mp3" data-title="Hill Climb Racing (im touching this guy)" data-number="04">
-          <button class="track-item-play" aria-label="Odtwórz Hill Climb Racing">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          </button>
-          <span class="track-item-number">04</span>
-          <div class="track-item-details">
-            <div class="track-item-title">Hill Climb Racing (im touching this guy)</div>
-            <div class="track-item-info">Pocket Jokers • 2024</div>
+          <div class="track-item" data-src="assets/Harvest_Fest.mp3" data-title="Harvest Fest" data-number="03">
+            <div class="col-num">
+              <span class="track-item-number">3</span>
+              <button class="track-item-play" aria-label="Odtwórz Harvest Fest">
+                <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="track-equalizer"><span></span><span></span><span></span></div>
+            </div>
+            <div class="col-title">
+              <span class="track-item-title-text">Harvest Fest</span>
+            </div>
+            <div class="col-dur">
+              <a href="assets/Harvest_Fest.mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </a>
+              <span class="track-item-duration">4:00</span>
+            </div>
           </div>
-          <span class="track-item-duration">3:39</span>
-        </div>
 
-        <div class="track-item" data-src="assets/Jak_Sie_Slizgasz_To_Sie_Slizgasz.mp3" data-title="Jak Śię Ślizgasz To Się Ślizgasz 2" data-number="05">
-          <button class="track-item-play" aria-label="Odtwórz Jak Śię Ślizgasz To Się Ślizgasz">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          </button>
-          <span class="track-item-number">05</span>
-          <div class="track-item-details">
-            <div class="track-item-title">Jak Śię Ślizgasz To Się Ślizgasz</div>
-            <div class="track-item-info">Pocket Jokers • 2024</div>
+          <div class="track-item" data-src="assets/Hill_Climb_Racing_(im_touching_this_guy).mp3" data-title="Hill Climb Racing (im touching this guy)" data-number="04">
+            <div class="col-num">
+              <span class="track-item-number">4</span>
+              <button class="track-item-play" aria-label="Odtwórz Hill Climb Racing">
+                <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="track-equalizer"><span></span><span></span><span></span></div>
+            </div>
+            <div class="col-title">
+              <span class="track-item-title-text">Hill Climb Racing (im touching this guy)</span>
+            </div>
+            <div class="col-dur">
+              <a href="assets/Hill_Climb_Racing_(im_touching_this_guy).mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </a>
+              <span class="track-item-duration">3:39</span>
+            </div>
           </div>
-          <span class="track-item-duration">3:41</span>
-        </div>
 
-        <div class="track-item" data-src="assets/Never_Past_Bedtime.mp3" data-title="Never Past Bedtime" data-number="06">
-          <button class="track-item-play" aria-label="Odtwórz Never Past Bedtime">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          </button>
-          <span class="track-item-number">06</span>
-          <div class="track-item-details">
-            <div class="track-item-title">Never Past Bedtime</div>
-            <div class="track-item-info">Pocket Jokers • 2024</div>
+          <div class="track-item" data-src="assets/Jak_Sie_Slizgasz_To_Sie_Slizgasz.mp3" data-title="Jak Śię Ślizgasz To Się Ślizgasz 2" data-number="05">
+            <div class="col-num">
+              <span class="track-item-number">5</span>
+              <button class="track-item-play" aria-label="Odtwórz Jak Śię Ślizgasz To Się Ślizgasz">
+                <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="track-equalizer"><span></span><span></span><span></span></div>
+            </div>
+            <div class="col-title">
+              <span class="track-item-title-text">Jak Śię Ślizgasz To Się Ślizgasz</span>
+            </div>
+            <div class="col-dur">
+              <a href="assets/Jak_Sie_Slizgasz_To_Sie_Slizgasz.mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </a>
+              <span class="track-item-duration">3:41</span>
+            </div>
           </div>
-          <span class="track-item-duration">2:40</span>
-        </div>
 
-        <div class="track-item" data-src="assets/Pocket_Jokers.mp3" data-title="Pocket Jokers" data-number="07">
-          <button class="track-item-play" aria-label="Odtwórz Pocket Jokers">
-            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-          </button>
-          <span class="track-item-number">07</span>
-          <div class="track-item-details">
-            <div class="track-item-title">Pocket Jokers</div>
-            <div class="track-item-info">Pocket Jokers • 2024</div>
+          <div class="track-item" data-src="assets/Never_Past_Bedtime.mp3" data-title="Never Past Bedtime" data-number="06">
+            <div class="col-num">
+              <span class="track-item-number">6</span>
+              <button class="track-item-play" aria-label="Odtwórz Never Past Bedtime">
+                <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="track-equalizer"><span></span><span></span><span></span></div>
+            </div>
+            <div class="col-title">
+              <span class="track-item-title-text">Never Past Bedtime</span>
+            </div>
+            <div class="col-dur">
+              <a href="assets/Never_Past_Bedtime.mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </a>
+              <span class="track-item-duration">2:40</span>
+            </div>
           </div>
-          <span class="track-item-duration">2:50</span>
+
+          <div class="track-item" data-src="assets/Pocket_Jokers.mp3" data-title="Pocket Jokers" data-number="07">
+            <div class="col-num">
+              <span class="track-item-number">7</span>
+              <button class="track-item-play" aria-label="Odtwórz Pocket Jokers">
+                <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <div class="track-equalizer"><span></span><span></span><span></span></div>
+            </div>
+            <div class="col-title">
+              <span class="track-item-title-text">Pocket Jokers</span>
+            </div>
+            <div class="col-dur">
+              <a href="assets/Pocket_Jokers.mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </a>
+              <span class="track-item-duration">2:50</span>
+            </div>
+          </div>
         </div>
-      </div>
     </div>
   </section>
 
@@ -345,8 +390,20 @@
       <button class="full-ctrl-btn" id="full-next-btn" aria-label="Następny utwór">
         <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg>
       </button>
-      <!-- Placeholder div for spacing balance so Play stays centered  -->
-      <div style="width: 24px; visibility: hidden;"></div>
+      <div class="volume-wrapper" id="full-volume-wrapper">
+        <button class="volume-toggle-btn full-ctrl-btn" id="full-volume-btn" aria-label="Głośność">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path class="vol-wave-1" d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path class="vol-wave-2" d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+        </button>
+        <div class="volume-slider-popup">
+          <div class="slider-vertical-wrapper">
+            <input type="range" class="volume-slider-vertical" id="full-volume-slider" min="0" max="1" step="0.01" value="0.3">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -374,6 +431,20 @@
         <button class="sticky-ctrl-btn" id="sticky-next-btn" aria-label="Następny">
           <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg>
         </button>
+        <div class="volume-wrapper" id="sticky-volume-wrapper">
+          <button class="volume-toggle-btn sticky-ctrl-btn" id="sticky-volume-btn" aria-label="Głośność">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path class="vol-wave-1" d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path class="vol-wave-2" d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </button>
+          <div class="volume-slider-popup">
+            <div class="slider-vertical-wrapper">
+              <input type="range" class="volume-slider-vertical" id="sticky-volume-slider" min="0" max="1" step="0.01" value="0.3">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
