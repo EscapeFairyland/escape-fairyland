@@ -1,0 +1,17 @@
+{
+  "name": "Pocket Jokers",
+  "short_name": "Pocket Jokers",
+  "description": "Pocket Jokers — Alternative Rock / Electro. Zespół muzyczny z Krakowa.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "48x48 72x72 96x96 128x128 192x192 256x256 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
