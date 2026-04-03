@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pocket-jokers-cache-v4';
+const CACHE_NAME = 'pocket-jokers-cache-v7';
 const urlsToCache = [
   './',
   './index.html',

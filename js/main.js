@@ -287,6 +287,9 @@ class ContactForm {
 class TrackPlayer {
   constructor() {
     this.audio = document.getElementById('main-audio');
+    if (this.audio) {
+      this.audio.volume = 0.3;
+    }
     this.trackItems = Array.from(document.querySelectorAll('.track-item[data-src]'));
     this.playerTitle = document.querySelector('.track-player-title');
     this.playerNumber = document.querySelector('.track-player-number');
@@ -461,6 +464,15 @@ class TrackPlayer {
     
     if (this.stickyLoopBtn) {
       this.stickyLoopBtn.addEventListener('click', () => this.toggleLoop());
+    }
+
+    this.fullVolumeSlider = document.getElementById('full-volume-slider');
+    if (this.fullVolumeSlider && this.audio) {
+      // Sync slider with initial volume
+      this.fullVolumeSlider.value = this.audio.volume;
+      this.fullVolumeSlider.addEventListener('input', (e) => {
+        this.audio.volume = e.target.value;
+      });
     }
 
     this.stickyProgressContainer = document.getElementById('sticky-progress-container');
