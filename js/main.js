@@ -291,6 +291,9 @@ class TrackPlayer {
     if (this.audio) {
       this.audio.volume = 0.3;
     }
+    if (this.audio) {
+      this.audio.volume = 0.3;
+    }
     this.trackItems = Array.from(document.querySelectorAll('.track-item[data-src]'));
     this.playerTitle = document.querySelector('.track-player-title');
     this.playerNumber = document.querySelector('.track-player-number');
