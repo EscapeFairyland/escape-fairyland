@@ -7,7 +7,7 @@
   <meta name="keywords" content="Pocket Jokers, zespół muzyczny, alternative rock, electro, Kraków">
   <meta name="author" content="Pocket Jokers">
   <meta name="theme-color" content="#050505">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://formsubmit.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://formsubmit.co; frame-src 'self' https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
   <title>Pocket Jokers</title>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎸</text></svg>">
@@ -29,6 +29,7 @@
         <a href="#hero" class="active">Start</a>
         <a href="#about">O nas</a>
         <a href="#listen">Muzyka</a>
+        <a href="#sprytne-sniadanka">Śniadanka</a>
         <a href="#contact">Kontakt</a>
       </div>
       <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -43,6 +44,7 @@
     <a href="#hero">Start</a>
     <a href="#about">O nas</a>
     <a href="#listen">Muzyka</a>
+    <a href="#sprytne-sniadanka">Śniadanka</a>
     <a href="#contact">Kontakt</a>
   </div>
 
@@ -263,6 +265,28 @@
     </div>
   </section>
 
+  <!-- SPRYTNE ŚNIADANKA -->
+  <section class="podcasts" id="sprytne-sniadanka">
+    <div class="container">
+      <div class="podcasts-header reveal">
+        <p class="about-label">Studio / Wideo</p>
+        <h2>Sprytne Śniadanka</h2>
+        <p class="podcasts-desc">Wraz z rozwojem zespołu tworzymy dla Was ekskluzywny materiał typu podcast/wideo pokazujący zespół od kuchni. Wybierz sezon, by przejrzeć zwiastuny i nadchodzące odcinki.</p>
+      </div>
+
+      <div class="season-tabs reveal">
+        <button class="season-tab active" data-season="1">Sezon 1</button>
+        <button class="season-tab" data-season="2">Sezon 2</button>
+        <button class="season-tab" data-season="3">Sezon 3</button>
+        <button class="season-tab" data-season="4">Sezon 4</button>
+      </div>
+
+      <div class="episodes-container" id="episodes-container">
+        <!-- JS Episodes -->
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <section class="contact" id="contact">
     <div class="container">
@@ -288,18 +312,6 @@
           </div>
 
           <div class="contact-card reveal reveal-delay-1">
-            <div class="contact-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-            <div>
-              <h4 class="contact-card-title">Telefon</h4>
-              <p class="contact-card-text">
-                <a href="tel:+48123456789">+48 123 456 789</a>
-              </p>
-            </div>
-          </div>
-
-          <div class="contact-card reveal reveal-delay-2">
             <div class="contact-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>

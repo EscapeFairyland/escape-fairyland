@@ -827,6 +827,61 @@ class TrackPlayer {
   }
 }
 
+// ── Episodes Manager ──
+class EpisodesManager {
+  constructor() {
+    this.container = document.getElementById('episodes-container');
+    this.tabs = document.querySelectorAll('.season-tab');
+    if (!this.container || this.tabs.length === 0) return;
+
+    this.bindEvents();
+    this.renderSeason(1);
+  }
+
+  bindEvents() {
+    this.tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        this.tabs.forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        const season = parseInt(e.target.dataset.season, 10);
+        
+        // Płynne zniknięcie przed renderem animacji
+        this.container.style.opacity = '0';
+        setTimeout(() => {
+          this.renderSeason(season);
+          this.container.style.opacity = '1';
+        }, 150);
+      });
+    });
+    this.container.style.transition = 'opacity 0.15s ease';
+  }
+
+  renderSeason(season) {
+    let html = '';
+    const totalEpisodes = 11;
+
+    for (let i = 1; i <= totalEpisodes; i++) {
+        // Opóźnienia dla pierwszych elementów by ładnie "wjechały"
+      let delayClass = i === 1 ? '' : (i === 2 ? 'reveal-delay-1' : 'reveal-delay-2');
+      
+      html += `
+      <div class="episode-card reveal visible ${delayClass}">
+        <div class="episode-thumb-wrapper">
+          <div class="episode-thumb disabled">
+            <svg viewBox="0 0 24 24" class="icon-play disabled" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="episode-info">
+          <h3 class="episode-title">Odcinek ${i}: TBA</h3>
+          <p class="episode-date">W przygotowaniu</p>
+        </div>
+      </div>`;
+    }
+
+    this.container.innerHTML = html;
+  }
+}
+
 // ── Initialize ──
 document.addEventListener('DOMContentLoaded', () => {
   window.particleSystem = new ParticleSystem('particles-canvas');
@@ -835,6 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
   new BackToTop();
   new ContactForm();
   new TrackPlayer();
+  new EpisodesManager();
 });
 
 // ── Service Worker Registration (PWA) ──
