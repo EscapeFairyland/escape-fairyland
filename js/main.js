@@ -4,20 +4,339 @@
    Contact Form
    ============================================ */
 
-// ── Particle System (subtle white dots) ──
-class ParticleSystem {
+/* ── Background Visualizer ──
+   One full-screen canvas, one rAF loop, one shared audio analyzer + pointer.
+   The visual is delegated to one of several independent renderers, picked at
+   random on load and re-rolled on every track change. Each renderer is a
+   completely different look — particles, flowing lines, aurora, spectrum
+   ridge, radial burst — not a variation of the same effect.
+
+   Renderer contract:
+     resize(w, h)
+     draw(ctx, audio, pointer, time)
+       audio   = { bass, mid, treble, avg, data }  (bands 0..1, data: Uint8Array|null)
+       pointer = { x, y, active }
+       time    = performance.now() in ms
+*/
+
+// Shape a raw FFT buffer into `bars` evenly-readable values. Raw spectra dump
+// almost all energy into the low (left) bins, so a plain mapping only lifts the
+// left edge. A rising gain across the band compensates the natural high-end
+// roll-off so the whole width reacts. Returns gentle idle motion when silent.
+function sampleSpectrum(data, bars) {
+  const out = new Array(bars);
+  if (!data) {
+    for (let i = 0; i < bars; i++) out[i] = 0.16 + 0.12 * Math.sin(i * 0.4);
+    return out;
+  }
+  // The top FFT bins of real music are essentially silent, so spreading bars
+  // across the full range leaves the right half flat. Use only the lower,
+  // musically-active portion of the spectrum, and apply a perceptual curve
+  // (pow < 1) so quieter mid bands still register visually.
+  const usable = Math.max(2, Math.floor(data.length * 0.45));
+  for (let i = 0; i < bars; i++) {
+    const f = bars > 1 ? i / (bars - 1) : 0;
+    const idx = Math.min(usable - 1, Math.floor(f * (usable - 1)));
+    const v = Math.pow(data[idx] / 255, 0.6) * (1 + f * 0.6);
+    out[i] = Math.min(1, v);
+  }
+  return out;
+}
+
+// Enhanced constellation: white dots + links, colored gradient glow on bass,
+// and cursor repulsion so the field reacts to the hand even in silence.
+class ParticlesRenderer {
+  constructor() {
+    this.particles = [];
+    this.w = 0;
+    this.h = 0;
+  }
+
+  resize(w, h) {
+    this.w = w;
+    this.h = h;
+    const count = Math.min(60, Math.floor((w * h) / 24000));
+    this.particles = [];
+    for (let i = 0; i < count; i++) {
+      this.particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        size: Math.random() * 1.2 + 0.4,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.3 + 0.05,
+      });
+    }
+  }
+
+  draw(ctx, audio, pointer) {
+    const { bass, avg } = audio;
+    const bassScale = 1 + bass * bass * 2;
+    const speedScale = 1 + avg * 1.5 + Math.pow(bass, 3) * 12;
+    const maxDist = 100 + bass * 200;
+    const glow = bass * bass;
+    const parts = this.particles;
+
+    for (const p of parts) {
+      p.x += p.speedX * speedScale;
+      p.y += p.speedY * speedScale;
+
+      if (pointer.influence > 0.001) {
+        const dx = p.x - pointer.x;
+        const dy = p.y - pointer.y;
+        const d2 = dx * dx + dy * dy;
+        const R = 140;
+        if (d2 < R * R && d2 > 0.01) {
+          const d = Math.sqrt(d2);
+          const force = (1 - d / R) * 2.4 * pointer.influence;
+          p.x += (dx / d) * force;
+          p.y += (dy / d) * force;
+        }
+      }
+
+      if (p.x < -5) p.x = this.w + 5;
+      if (p.x > this.w + 5) p.x = -5;
+      if (p.y < -5) p.y = this.h + 5;
+      if (p.y > this.h + 5) p.y = -5;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * bassScale, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, p.opacity + glow * 0.6)})`;
+      ctx.fill();
+    }
+
+    for (let i = 0; i < parts.length; i++) {
+      for (let j = i + 1; j < parts.length; j++) {
+        const dx = parts[i].x - parts[j].x;
+        const dy = parts[i].y - parts[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          const op = (1 - dist / maxDist) * (0.05 + glow * 0.8);
+          ctx.strokeStyle = `rgba(255, 255, 255, ${op})`;
+          ctx.lineWidth = 0.5 + bass * 1.5;
+          ctx.beginPath();
+          ctx.moveTo(parts[i].x, parts[i].y);
+          ctx.lineTo(parts[j].x, parts[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    if (pointer.influence > 0.001) {
+      for (const p of parts) {
+        const dx = p.x - pointer.x;
+        const dy = p.y - pointer.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 160) {
+          const op = (1 - dist / 160) * 0.22 * pointer.influence;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${op})`;
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(pointer.x, pointer.y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+}
+
+// Stacked sine waves painted with a horizontal gradient — oscilloscope/aurora
+// feel. Amplitude tracks bass/mid; the cursor locally bends the strands.
+class FlowLinesRenderer {
+  constructor() {
+    this.w = 0;
+    this.h = 0;
+    this.phase = 0;
+  }
+
+  resize(w, h) {
+    this.w = w;
+    this.h = h;
+  }
+
+  draw(ctx, audio, pointer) {
+    const { bass, mid, treble } = audio;
+    this.phase += 0.012 + bass * 0.03;
+    const lines = 5;
+
+    for (let l = 0; l < lines; l++) {
+      const t = l / (lines - 1);
+      const baseY = this.h * (0.3 + t * 0.4);
+      const amp = 34 + bass * 130 * (1 - t * 0.4) + mid * 55;
+      const freq = 0.004 + t * 0.003;
+
+      const grad = ctx.createLinearGradient(0, 0, this.w, 0);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      grad.addColorStop(0.5, `rgba(255, 255, 255, ${0.30 - l * 0.03 + treble * 0.5})`);
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.6 + bass * 2.4;
+      ctx.beginPath();
+
+      for (let x = 0; x <= this.w; x += 8) {
+        let y = baseY
+          + Math.sin(x * freq + this.phase + l) * amp
+          + Math.sin(x * freq * 2.3 + this.phase * 1.5) * amp * 0.3;
+        if (pointer.influence > 0.001) {
+          const dx = x - pointer.x;
+          const falloff = Math.exp(-(dx * dx) / (2 * 120 * 120));
+          y += (pointer.y - baseY) * falloff * 0.4 * pointer.influence;
+        }
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+}
+
+// Soft, drifting gradient blobs blended additively — an ambient aurora that
+// breathes with the bass and gently leans toward the cursor.
+class AuroraRenderer {
+  constructor() {
+    this.blobs = [];
+    this.w = 0;
+    this.h = 0;
+  }
+
+  resize(w, h) {
+    this.w = w;
+    this.h = h;
+    const cols = [[120, 180, 255], [180, 120, 255], [120, 255, 220], [255, 140, 200]];
+    this.blobs = [];
+    for (let i = 0; i < 4; i++) {
+      this.blobs.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        r: Math.min(w, h) * (0.25 + Math.random() * 0.2),
+        col: cols[i % cols.length],
+      });
+    }
+  }
+
+  draw(ctx, audio, pointer) {
+    const { bass, avg } = audio;
+    ctx.globalCompositeOperation = 'lighter';
+
+    for (const b of this.blobs) {
+      b.x += b.vx * (1 + avg * 2);
+      b.y += b.vy * (1 + avg * 2);
+      if (b.x < -b.r) b.x = this.w + b.r;
+      if (b.x > this.w + b.r) b.x = -b.r;
+      if (b.y < -b.r) b.y = this.h + b.r;
+      if (b.y > this.h + b.r) b.y = -b.r;
+
+      let cx = b.x;
+      let cy = b.y;
+      if (pointer.influence > 0.001) {
+        cx += (pointer.x - b.x) * 0.05 * pointer.influence;
+        cy += (pointer.y - b.y) * 0.05 * pointer.influence;
+      }
+
+      const r = b.r * (1 + bass * 0.4);
+      const a = 0.05 + bass * 0.12;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0, `rgba(${b.col[0]}, ${b.col[1]}, ${b.col[2]}, ${a})`);
+      g.addColorStop(1, `rgba(${b.col[0]}, ${b.col[1]}, ${b.col[2]}, 0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+  }
+}
+
+// Rays fired from a point under the title, length and brightness driven by the
+// spectrum — a concert "sunburst" that pulses on the bass and slowly rotates.
+class RadialBurstRenderer {
+  constructor() {
+    this.w = 0;
+    this.h = 0;
+    this.rays = 96;
+    this.angle = 0;
+  }
+
+  resize(w, h) {
+    this.w = w;
+    this.h = h;
+  }
+
+  draw(ctx, audio) {
+    const { bass } = audio;
+    // Fixed centre under the title — the burst doesn't chase the cursor.
+    const cx = this.w / 2;
+    const cy = this.h * 0.42;
+    this.angle += 0.0015 + bass * 0.012;
+
+    const n = this.rays;
+    const minSide = Math.min(this.w, this.h);
+    const baseLen = minSide * 0.14;
+    // Mirror a half-spectrum around the circle so the burst stays symmetrical
+    // instead of bunching all the energy into one arc.
+    const spectrum = sampleSpectrum(audio.data, Math.ceil(n / 2));
+
+    // Additive blending makes the overlapping cores near the centre glow.
+    ctx.globalCompositeOperation = 'lighter';
+
+    // Inner ring anchors the shape so it reads as a circle even when quiet.
+    ctx.beginPath();
+    ctx.arc(cx, cy, baseLen * 0.52, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(150, 200, 255, ${0.12 + bass * 0.3})`;
+    ctx.lineWidth = 1 + bass * 1.5;
+    ctx.stroke();
+
+    for (let i = 0; i < n; i++) {
+      const a = this.angle + (i / n) * Math.PI * 2;
+      const v = spectrum[Math.min(spectrum.length - 1, i < n / 2 ? i : n - i)];
+      const len = baseLen + v * minSide * 0.5 + bass * 80;
+      const x1 = cx + Math.cos(a) * baseLen * 0.55;
+      const y1 = cy + Math.sin(a) * baseLen * 0.55;
+      const x2 = cx + Math.cos(a) * len;
+      const y2 = cy + Math.sin(a) * len;
+      const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+      grad.addColorStop(0, `rgba(190, 220, 255, ${0.22 + bass * 0.3})`);
+      grad.addColorStop(1, 'rgba(140, 170, 255, 0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.4 + v * 3;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+  }
+}
+
+class BackgroundVisualizer {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
     if (!this.canvas) return;
     this.ctx = this.canvas.getContext('2d');
-    this.particles = [];
-    this.resizeCanvas();
-    this.createParticles();
-    this.bindEvents();
-    
+
     this.audioAnalyzer = null;
     this.dataArray = null;
-    
+    this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // `influence` (0..1) ramps up quickly on movement and eases back down when
+    // the pointer is lost, so cursor-driven effects fade out instead of snapping.
+    this.pointer = { x: 0, y: 0, active: false, influence: 0 };
+    this._pointerTimer = null;
+
+    this.renderers = [
+      new ParticlesRenderer(),
+      new FlowLinesRenderer(),
+      new AuroraRenderer(),
+      new RadialBurstRenderer(),
+    ];
+    this.activeIndex = Math.floor(Math.random() * this.renderers.length);
+
+    this.resize();
+    this.bindEvents();
     this.animate();
   }
 
@@ -26,98 +345,87 @@ class ParticleSystem {
     this.dataArray = dataArray;
   }
 
-  resizeCanvas() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+  // Re-roll the background to a different look (called on every track change).
+  nextRandomMode() {
+    if (this.renderers.length < 2) return;
+    let next;
+    do {
+      next = Math.floor(Math.random() * this.renderers.length);
+    } while (next === this.activeIndex);
+    this.activeIndex = next;
   }
 
-  createParticles() {
-    const count = Math.min(50, Math.floor((this.canvas.width * this.canvas.height) / 25000));
-    this.particles = [];
-    for (let i = 0; i < count; i++) {
-      this.particles.push({
-        x: Math.random() * this.canvas.width,
-        y: Math.random() * this.canvas.height,
-        size: Math.random() * 1.2 + 0.3,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.3 + 0.05,
-      });
-    }
+  resize() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    this.renderers.forEach(r => r.resize(this.canvas.width, this.canvas.height));
   }
 
   bindEvents() {
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        this.resizeCanvas();
-        this.createParticles();
-      }, 200);
+      resizeTimer = setTimeout(() => this.resize(), 200);
     });
+
+    const setPointer = (x, y) => {
+      this.pointer.x = x;
+      this.pointer.y = y;
+      this.pointer.active = true;
+      clearTimeout(this._pointerTimer);
+      this._pointerTimer = setTimeout(() => { this.pointer.active = false; }, 800);
+    };
+    window.addEventListener('mousemove', (e) => setPointer(e.clientX, e.clientY), { passive: true });
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches[0]) setPointer(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    window.addEventListener('mouseleave', () => { this.pointer.active = false; });
+  }
+
+  computeAudio() {
+    const data = this.dataArray;
+    let bass = 0;
+    let mid = 0;
+    let treble = 0;
+    let avg = 0;
+    if (this.audioAnalyzer && data) {
+      this.audioAnalyzer.getByteFrequencyData(data);
+      const n = data.length;
+      const bEnd = 15;
+      const mEnd = Math.floor(n * 0.5);
+      let sum = 0;
+      let bassSum = 0;
+      let midSum = 0;
+      let trebleSum = 0;
+      for (let i = 0; i < n; i++) {
+        sum += data[i];
+        if (i < bEnd) bassSum += data[i];
+        else if (i < mEnd) midSum += data[i];
+        else trebleSum += data[i];
+      }
+      avg = sum / n / 255;
+      bass = bassSum / bEnd / 255;
+      mid = midSum / Math.max(1, mEnd - bEnd) / 255;
+      treble = trebleSum / Math.max(1, n - mEnd) / 255;
+    }
+    return { bass, mid, treble, avg, data };
   }
 
   animate() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    let averageFrequency = 0;
-    let bass = 0;
-    if (this.audioAnalyzer && this.dataArray) {
-      this.audioAnalyzer.getByteFrequencyData(this.dataArray);
-      let sum = 0;
-      let bassSum = 0;
-      for (let i = 0; i < this.dataArray.length; i++) {
-        sum += this.dataArray[i];
-        if (i < 15) bassSum += this.dataArray[i]; // Lower bins for bass
-      }
-      averageFrequency = sum / this.dataArray.length;
-      bass = bassSum / 15;
+    // Ease the pointer influence toward its target: snappy on acquire, gentle
+    // on release so effects glide back to rest instead of jumping.
+    const p = this.pointer;
+    const target = p.active ? 1 : 0;
+    const k = target > p.influence ? 0.16 : 0.035;
+    p.influence += (target - p.influence) * k;
+
+    const audio = this.computeAudio();
+    this.renderers[this.activeIndex].draw(this.ctx, audio, this.pointer, performance.now());
+    if (!this.reduceMotion) {
+      requestAnimationFrame(() => this.animate());
     }
-
-    // More aggressive scaling based on bass and average frequency
-    const bassScale = 1 + Math.pow(bass / 255, 2) * 2; 
-    // Speed heavily amplified during bass drops (kick drums / basslines)
-    const speedScale = 1 + (averageFrequency / 255) * 1.5 + Math.pow(bass / 255, 3) * 12;
-    const currentMaxDist = 100 + (bass / 255) * 200;
-
-    for (const p of this.particles) {
-      p.x += p.speedX * speedScale;
-      p.y += p.speedY * speedScale;
-
-      if (p.x < -5) p.x = this.canvas.width + 5;
-      if (p.x > this.canvas.width + 5) p.x = -5;
-      if (p.y < -5) p.y = this.canvas.height + 5;
-      if (p.y > this.canvas.height + 5) p.y = -5;
-
-      this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, p.size * bassScale, 0, Math.PI * 2);
-      
-      // Particles keep their original opacity to avoid heavy flickering
-      this.ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
-      this.ctx.fill();
-    }
-
-    // Dynamic connecting lines
-    for (let i = 0; i < this.particles.length; i++) {
-      for (let j = i + 1; j < this.particles.length; j++) {
-        const dx = this.particles[i].x - this.particles[j].x;
-        const dy = this.particles[i].y - this.particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < currentMaxDist) {
-          const baseOpacity = 1 - dist / currentMaxDist;
-          // Lines become much brighter when music drops
-          const lineOpacity = baseOpacity * (0.05 + Math.pow(bass / 255, 2) * 0.8);
-          this.ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
-          this.ctx.lineWidth = 0.5 + (bass / 255) * 1.5;
-          this.ctx.beginPath();
-          this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
-          this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
-          this.ctx.stroke();
-        }
-      }
-    }
-
-    requestAnimationFrame(() => this.animate());
   }
 }
 
@@ -305,6 +613,9 @@ class TrackPlayer {
     this.stickyTitle = document.querySelector('.sticky-player-title');
     this.stickyPlayBtn = document.getElementById('sticky-play-btn');
     this.stickyProgress = document.getElementById('sticky-player-progress');
+    this.stickyProgressContainer = document.getElementById('sticky-progress-container');
+    this.stickyTimeCurrent = document.getElementById('sticky-time-current');
+    this.stickyTimeTotal = document.getElementById('sticky-time-total');
     this.stickyNextBtn = document.getElementById('sticky-next-btn');
     this.stickyPrevBtn = document.getElementById('sticky-prev-btn');
     this.stickyLoopBtn = document.getElementById('sticky-loop-btn');
@@ -335,6 +646,14 @@ class TrackPlayer {
       this.heroIconPause = this.heroPlayBtn.querySelector('.icon-pause');
     }
 
+    // Hero "Posłuchaj" cue — plays/pauses without leaving the hero
+    this.heroCue = document.getElementById('hero-cue');
+    if (this.heroCue) {
+      this.heroCueIconPlay = this.heroCue.querySelector('.icon-play');
+      this.heroCueIconPause = this.heroCue.querySelector('.icon-pause');
+      this.heroCueText = this.heroCue.querySelector('.hero-cue-text');
+    }
+
     if (this.fullPlayBtn) {
       this.fullIconPlay = this.fullPlayBtn.querySelector('.icon-play');
       this.fullIconPause = this.fullPlayBtn.querySelector('.icon-pause');
@@ -342,7 +661,29 @@ class TrackPlayer {
 
     this.audioContext = null;
 
+    // Bass-reactive glow level (0..1) fed to the sticky player via a CSS var.
+    this._level = 0;
+    this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     this.bindEvents();
+    if (!this.reduceMotion) this.updateLevel();
+  }
+
+  // Smoothly track the bass and expose it as --level on the sticky player so
+  // the progress bar and accents can pulse with the music (CSS does the rest).
+  updateLevel() {
+    let target = 0;
+    if (this.analyzer && this.freqData && this.audio && !this.audio.paused) {
+      this.analyzer.getByteFrequencyData(this.freqData);
+      let sum = 0;
+      for (let i = 0; i < 12; i++) sum += this.freqData[i];
+      target = Math.min(1, (sum / 12 / 255) * 1.4);
+    }
+    this._level += (target - this._level) * 0.18;
+    if (this.stickyPlayer) {
+      this.stickyPlayer.style.setProperty('--level', this._level.toFixed(3));
+    }
+    requestAnimationFrame(() => this.updateLevel());
   }
 
   initAudioContext() {
@@ -367,7 +708,11 @@ class TrackPlayer {
         
         const bufferLength = analyzer.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
-        
+
+        // Keep a reference so the sticky player can pulse with the bass too.
+        this.analyzer = analyzer;
+        this.freqData = dataArray;
+
         if (window.particleSystem) {
           window.particleSystem.setAnalyzer(analyzer, dataArray);
         }
@@ -389,6 +734,14 @@ class TrackPlayer {
     if (this.stickyLoopBtn) {
       this.stickyLoopBtn.classList.toggle('active', this.audio.loop);
     }
+  }
+
+  setCueState(playing) {
+    if (!this.heroCue) return;
+    this.heroCue.classList.toggle('playing', playing);
+    if (this.heroCueIconPlay) this.heroCueIconPlay.style.display = playing ? 'none' : 'block';
+    if (this.heroCueIconPause) this.heroCueIconPause.style.display = playing ? 'block' : 'none';
+    if (this.heroCueText) this.heroCueText.textContent = playing ? 'Pauza' : 'Posłuchaj';
   }
 
   playNext() {
@@ -461,6 +814,20 @@ class TrackPlayer {
       this.heroPlayBtn.addEventListener('click', () => {
         if (this.trackItems.length > 0) {
           this.toggleTrack(this.trackItems[0]);
+        }
+      });
+    }
+
+    if (this.heroCue) {
+      this.heroCue.addEventListener('click', () => {
+        if (!this.currentTrack) {
+          // Nothing loaded yet — start the first track, stay on the hero
+          if (this.trackItems.length > 0) this.toggleTrack(this.trackItems[0]);
+        } else if (this.audio.paused) {
+          this.initAudioContext();
+          this.audio.play();
+        } else {
+          this.audio.pause();
         }
       });
     }
@@ -605,6 +972,7 @@ class TrackPlayer {
             this.heroIconPlay.style.display = 'block';
             this.heroIconPause.style.display = 'none';
           }
+          this.setCueState(false);
         }
       });
 
@@ -626,6 +994,7 @@ class TrackPlayer {
           this.heroIconPlay.style.display = 'block';
           this.heroIconPause.style.display = 'none';
         }
+        this.setCueState(false);
       });
 
       this.audio.addEventListener('play', () => {
@@ -651,6 +1020,7 @@ class TrackPlayer {
             this.heroIconPause.style.display = 'none';
           }
         }
+        this.setCueState(true);
       });
 
       this.audio.addEventListener('timeupdate', () => {
@@ -658,20 +1028,28 @@ class TrackPlayer {
           const progress = (this.audio.currentTime / this.audio.duration) * 100;
           if (this.stickyProgress) this.stickyProgress.style.width = `${progress}%`;
           if (this.fullProgress) this.fullProgress.style.width = `${progress}%`;
-          
-          if (this.fullTimeCurrent) this.fullTimeCurrent.textContent = this.formatTime(this.audio.currentTime);
-          if (this.fullTimeTotal) this.fullTimeTotal.textContent = this.formatTime(this.audio.duration);
+
+          const current = this.formatTime(this.audio.currentTime);
+          const total = this.formatTime(this.audio.duration);
+          if (this.fullTimeCurrent) this.fullTimeCurrent.textContent = current;
+          if (this.fullTimeTotal) this.fullTimeTotal.textContent = total;
+          if (this.stickyTimeCurrent) this.stickyTimeCurrent.textContent = current;
+          if (this.stickyTimeTotal) this.stickyTimeTotal.textContent = total;
         }
       });
-      
+
+      const seekFrom = (container, e) => {
+        if (!this.audio.duration) return;
+        const rect = container.getBoundingClientRect();
+        const percentage = (e.clientX - rect.left) / rect.width;
+        this.audio.currentTime = Math.max(0, Math.min(1, percentage)) * this.audio.duration;
+      };
+
       if (this.fullProgressContainer) {
-        this.fullProgressContainer.addEventListener('click', (e) => {
-          if (!this.audio.duration) return;
-          const rect = this.fullProgressContainer.getBoundingClientRect();
-          const clickX = e.clientX - rect.left;
-          const percentage = clickX / rect.width;
-          this.audio.currentTime = percentage * this.audio.duration;
-        });
+        this.fullProgressContainer.addEventListener('click', (e) => seekFrom(this.fullProgressContainer, e));
+      }
+      if (this.stickyProgressContainer) {
+        this.stickyProgressContainer.addEventListener('click', (e) => seekFrom(this.stickyProgressContainer, e));
       }
     }
 
@@ -732,7 +1110,12 @@ class TrackPlayer {
       return;
     }
 
-    // Switch to new track
+    // Re-roll the background only when switching between tracks — the first
+    // play keeps whatever effect was randomly chosen on page load.
+    if (this.currentTrack && window.particleSystem && window.particleSystem.nextRandomMode) {
+      window.particleSystem.nextRandomMode();
+    }
+
     if (this.currentTrack) {
       this.currentTrack.classList.remove('playing');
       this.currentTrack.classList.remove('is-paused');
@@ -827,70 +1210,14 @@ class TrackPlayer {
   }
 }
 
-// ── Episodes Manager ──
-class EpisodesManager {
-  constructor() {
-    this.container = document.getElementById('episodes-container');
-    this.tabs = document.querySelectorAll('.season-tab');
-    if (!this.container || this.tabs.length === 0) return;
-
-    this.bindEvents();
-    this.renderSeason(1);
-  }
-
-  bindEvents() {
-    this.tabs.forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        this.tabs.forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        const season = parseInt(e.target.dataset.season, 10);
-        
-        // Płynne zniknięcie przed renderem animacji
-        this.container.style.opacity = '0';
-        setTimeout(() => {
-          this.renderSeason(season);
-          this.container.style.opacity = '1';
-        }, 150);
-      });
-    });
-    this.container.style.transition = 'opacity 0.15s ease';
-  }
-
-  renderSeason(season) {
-    let html = '';
-    const totalEpisodes = 11;
-
-    for (let i = 1; i <= totalEpisodes; i++) {
-        // Opóźnienia dla pierwszych elementów by ładnie "wjechały"
-      let delayClass = i === 1 ? '' : (i === 2 ? 'reveal-delay-1' : 'reveal-delay-2');
-      
-      html += `
-      <div class="episode-card reveal visible ${delayClass}">
-        <div class="episode-thumb-wrapper">
-          <div class="episode-thumb disabled">
-            <svg viewBox="0 0 24 24" class="icon-play disabled" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-          </div>
-        </div>
-        <div class="episode-info">
-          <h3 class="episode-title">Odcinek ${i}: TBA</h3>
-          <p class="episode-date">W przygotowaniu</p>
-        </div>
-      </div>`;
-    }
-
-    this.container.innerHTML = html;
-  }
-}
-
 // ── Initialize ──
 document.addEventListener('DOMContentLoaded', () => {
-  window.particleSystem = new ParticleSystem('particles-canvas');
+  window.particleSystem = new BackgroundVisualizer('particles-canvas');
   new Navbar();
   new ScrollReveal();
   new BackToTop();
   new ContactForm();
   new TrackPlayer();
-  new EpisodesManager();
 });
 
 // ── Service Worker Registration (PWA) ──
