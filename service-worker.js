@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pocket-jokers-cache-v8';
+const CACHE_NAME = 'pocket-jokers-cache-v10';
 const urlsToCache = [
   './',
   './index.html',
@@ -20,7 +20,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache V8');
+        console.log('Opened cache V10');
         return cache.addAll(urlsToCache);
       })
   );
@@ -48,7 +48,8 @@ self.addEventListener('fetch', event => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          if (event.request.headers.get('accept').includes('text/html')) {
+          // Nagłówek "accept" może nie istnieć — bez guardu .includes() rzuca błąd
+          if ((event.request.headers.get('accept') || '').includes('text/html')) {
             return caches.match('./index.html');
           }
         });

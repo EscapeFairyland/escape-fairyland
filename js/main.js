@@ -356,9 +356,15 @@ class BackgroundVisualizer {
   }
 
   resize() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-    this.renderers.forEach(r => r.resize(this.canvas.width, this.canvas.height));
+    // Rysowanie w skali devicePixelRatio (max 2) — bez tego canvas jest
+    // rozmyty na ekranach retina/telefonach
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.w = window.innerWidth;
+    this.h = window.innerHeight;
+    this.canvas.width = this.w * dpr;
+    this.canvas.height = this.h * dpr;
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.renderers.forEach(r => r.resize(this.w, this.h));
   }
 
   bindEvents() {
@@ -412,7 +418,7 @@ class BackgroundVisualizer {
   }
 
   animate() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.clearRect(0, 0, this.w, this.h);
 
     // Ease the pointer influence toward its target: snappy on acquire, gentle
     // on release so effects glide back to rest instead of jumping.
@@ -499,13 +505,15 @@ class Navbar {
   }
 
   toggleMobile() {
-    this.hamburger.classList.toggle('active');
-    this.mobileMenu.classList.toggle('open');
-    document.body.style.overflow = this.mobileMenu.classList.contains('open') ? 'hidden' : '';
+    const open = this.mobileMenu.classList.toggle('open');
+    this.hamburger.classList.toggle('active', open);
+    this.hamburger.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
   }
 
   closeMobile() {
     this.hamburger.classList.remove('active');
+    this.hamburger.setAttribute('aria-expanded', 'false');
     this.mobileMenu.classList.remove('open');
     document.body.style.overflow = '';
   }
@@ -556,17 +564,21 @@ class ContactForm {
       },
       body: JSON.stringify(plainFormData)
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
     .then(data => {
       this.form.style.display = 'none';
       const success = document.querySelector('.form-success');
-      if (success) success.classList.add('show');
-
-      // Pokaż powiadomienie że formularz wymaga aktywacji jeśli to pierwszy raz
-      if (data.message && data.message.includes('activation')) {
-        success.innerHTML = 'Wysłano! Sprawdź skrzynkę ' + this.form.action.split('/').pop() + ' aby jednorazowo aktywować formularz.';
-      } else {
-        success.innerHTML = '✓ Wiadomość wysłana. Odezwiemy się wkrótce.';
+      if (success) {
+        success.classList.add('show');
+        // Pokaż powiadomienie że formularz wymaga aktywacji jeśli to pierwszy raz
+        if (data.message && data.message.includes('activation')) {
+          success.textContent = 'Wysłano! Sprawdź skrzynkę ' + this.form.action.split('/').pop() + ' aby jednorazowo aktywować formularz.';
+        } else {
+          success.textContent = '✓ Wiadomość wysłana. Odezwiemy się wkrótce.';
+        }
       }
 
       setTimeout(() => {
@@ -596,9 +608,6 @@ class ContactForm {
 class TrackPlayer {
   constructor() {
     this.audio = document.getElementById('main-audio');
-    if (this.audio) {
-      this.audio.volume = 0.3;
-    }
     if (this.audio) {
       this.audio.volume = 0.3;
     }
@@ -777,11 +786,21 @@ class TrackPlayer {
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
+  // play() zwraca promise, który przeglądarka może odrzucić (np. polityka
+  // autoplay) — bez catch każde odrzucenie sypie błędem w konsoli
+  tryPlay() {
+    if (!this.audio) return;
+    const p = this.audio.play();
+    if (p && typeof p.catch === 'function') {
+      p.catch(err => console.warn('Odtwarzanie zablokowane:', err));
+    }
+  }
+
   bindEvents() {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('play', () => {
         this.initAudioContext();
-        if (this.audio) this.audio.play();
+        this.tryPlay();
       });
       navigator.mediaSession.setActionHandler('pause', () => {
         if (this.audio) this.audio.pause();
@@ -800,13 +819,7 @@ class TrackPlayer {
           e.stopPropagation(); // Only download, do not play
           return;
         }
-
-        // Prevent double-firing if the button itself is clicked
-        if (e.target.closest('.track-item-play')) {
-          this.toggleTrack(item);
-        } else {
-          this.toggleTrack(item);
-        }
+        this.toggleTrack(item);
       });
     });
 
@@ -825,7 +838,7 @@ class TrackPlayer {
           if (this.trackItems.length > 0) this.toggleTrack(this.trackItems[0]);
         } else if (this.audio.paused) {
           this.initAudioContext();
-          this.audio.play();
+          this.tryPlay();
         } else {
           this.audio.pause();
         }
@@ -836,7 +849,7 @@ class TrackPlayer {
       this.stickyPlayBtn.addEventListener('click', () => {
         if (this.audio.paused) {
           this.initAudioContext();
-          this.audio.play();
+          this.tryPlay();
         } else {
           this.audio.pause();
         }
@@ -847,7 +860,7 @@ class TrackPlayer {
       this.fullPlayBtn.addEventListener('click', () => {
         if (this.audio.paused) {
           this.initAudioContext();
-          this.audio.play();
+          this.tryPlay();
         } else {
           this.audio.pause();
         }
@@ -1057,15 +1070,19 @@ class TrackPlayer {
       // Zignoruj, jeśli użytkownik pisze w formularzu kontaktowym
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
 
+      // Skróty odtwarzacza działają dopiero po wybraniu utworu — wcześniej
+      // spacja i strzałki muszą normalnie przewijać stronę
+      if (!this.currentTrack || !this.audio) return;
+
+      const fullPlayerOpen = this.fullPlayer && !this.fullPlayer.classList.contains('hidden');
+
       switch(e.key) {
         case ' ':
         case 'Spacebar':
           e.preventDefault();
-          if (this.audio) {
-            this.initAudioContext();
-            if (this.audio.paused) this.audio.play();
-            else this.audio.pause();
-          }
+          this.initAudioContext();
+          if (this.audio.paused) this.tryPlay();
+          else this.audio.pause();
           break;
         case 'ArrowRight':
           e.preventDefault();
@@ -1076,18 +1093,15 @@ class TrackPlayer {
           this.playPrev();
           break;
         case 'ArrowUp':
+          // Głośność tylko w pełnym odtwarzaczu — na stronie strzałki przewijają
+          if (!fullPlayerOpen) return;
           e.preventDefault();
-          if (this.audio) {
-            const newVol = Math.min(1, this.currentVolume + 0.1);
-            updateVolumeUI(newVol);
-          }
+          updateVolumeUI(Math.min(1, this.currentVolume + 0.1));
           break;
         case 'ArrowDown':
+          if (!fullPlayerOpen) return;
           e.preventDefault();
-          if (this.audio) {
-            const newVol = Math.max(0, this.currentVolume - 0.1);
-            updateVolumeUI(newVol);
-          }
+          updateVolumeUI(Math.max(0, this.currentVolume - 0.1));
           break;
       }
     });
@@ -1178,7 +1192,7 @@ class TrackPlayer {
     if (this.audio) {
       this.audio.src = src;
       this.audio.load();
-      this.audio.play();
+      this.tryPlay();
     }
   }
 

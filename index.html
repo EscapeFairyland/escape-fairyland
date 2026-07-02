@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Pocket Jokers">
+  <meta name="description" content="Pocket Jokers — zespół muzyczny z Krakowa. Alternative rock i electro. Posłuchaj naszych utworów i programu Sprytne Śniadanka.">
   <meta name="keywords" content="Pocket Jokers, zespół muzyczny, alternative rock, electro, Kraków">
   <meta name="author" content="Pocket Jokers">
   <meta name="theme-color" content="#050505">
@@ -14,6 +14,11 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="assets/icon.svg">
   <link rel="stylesheet" href="css/style.css">
+  <noscript>
+    <style>
+      .reveal { opacity: 1 !important; transform: none !important; }
+    </style>
+  </noscript>
 </head>
 <body>
 
@@ -27,12 +32,13 @@
       </a>
       <div class="nav-links">
         <a href="#hero" class="active">Start</a>
+        <a href="#socials">Sociale</a>
         <a href="#about">O nas</a>
         <a href="#listen">Muzyka</a>
         <a href="#sprytne-sniadanka">Śniadanka</a>
         <a href="#contact">Kontakt</a>
       </div>
-      <button class="hamburger" id="hamburger" aria-label="Menu">
+      <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
         <span></span>
         <span></span>
         <span></span>
@@ -42,6 +48,7 @@
 
   <div class="mobile-menu" id="mobile-menu">
     <a href="#hero">Start</a>
+    <a href="#socials">Sociale</a>
     <a href="#about">O nas</a>
     <a href="#listen">Muzyka</a>
     <a href="#sprytne-sniadanka">Śniadanka</a>
@@ -56,47 +63,99 @@
         <span class="line bottom">Jokers</span>
       </h1>
 
-      <div class="hero-socials">
-        <a href="https://www.instagram.com/pocketjokers.pl?igsh=MXhkbnZicWFnODVlcQ==" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-          <span>Instagram</span>
-        </a>
-        <a href="https://www.tiktok.com/@pocketjokers1" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="TikTok">
-          <svg viewBox="0 0 448 512" fill="currentColor"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/></svg>
-          <span>TikTok</span>
-        </a>
-        <a href="https://x.com/PocketJokers1" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="X (Twitter)">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
-          <span>X</span>
-        </a>
-        <a href="https://soundcloud.com/pocketjokers" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="SoundCloud">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.175 12.225c-.092 0-.167.075-.167.167v4.616c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167v-4.616c0-.092-.075-.167-.167-.167H1.175Zm1.618-1.503c-.092 0-.167.075-.167.167v6.119c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167v-6.119c0-.092-.075-.167-.167-.167h-.084Zm1.618-1.127c-.092 0-.167.075-.167.167v7.246c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V9.762c0-.092-.075-.167-.167-.167h-.084Zm1.618-1.378c-.092 0-.167.075-.167.167v8.624c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V8.384c0-.092-.075-.167-.167-.167h-.084ZM7.647 6.63c-.092 0-.167.075-.167.167v10.378c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V6.797c0-.092-.075-.167-.167-.167h-.084ZM9.265 5.502c-.092 0-.167.075-.167.167v11.506c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V5.669c0-.092-.075-.167-.167-.167h-.084Zm1.618-.877c-.092 0-.167.075-.167.167v12.383c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V4.792c0-.092-.075-.167-.167-.167h-.084Zm1.618 1.629c-.092 0-.167.075-.167.167v10.754c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V6.421c0-.092-.075-.167-.167-.167h-.084ZM23.834 11.85A4.667 4.667 0 0 0 19.332 7.5a4.706 4.706 0 0 0-4.881 2.375V17.06h9.056c.18 0 .326-.146.326-.326v-4.884Z"/></svg>
-          <span>SoundCloud</span>
-        </a>
-        <a href="https://www.facebook.com/share/18XDzCTHQ2/" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Facebook">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-          <span>Facebook</span>
-        </a>
-        <a href="https://discord.gg/CRYmERxPZ" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Discord">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
-          <span>Discord</span>
-        </a>
-        <a href="https://twitch.tv/pocketjokers1" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="Twitch">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
-          <span>Twitch</span>
-        </a>
-        <a href="https://youtube.com/@pocketjokers10?si=IAt3FICZA2JHA5US" target="_blank" rel="noopener noreferrer" class="hero-social-link" aria-label="YouTube">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#050505"/></svg>
-          <span>YouTube</span>
-        </a>
-      </div>
-
       <button type="button" id="hero-cue" class="hero-cue" aria-label="Posłuchaj naszej muzyki">
         <svg class="hero-cue-icon icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
         <svg class="hero-cue-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display:none"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
         <span class="hero-cue-text">Posłuchaj</span>
         <span class="hero-cue-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
       </button>
+    </div>
+  </section>
+
+  <!-- SOCIALS -->
+  <section class="socials" id="socials">
+    <div class="container">
+      <div class="socials-header reveal">
+        <p class="about-label">Sociale</p>
+        <h2>Znajdź nas w sieci</h2>
+        <p class="socials-desc">Kulisy, nowe kawałki i zapowiedzi — wszystko najpierw ląduje tam.</p>
+      </div>
+    </div>
+
+    <div class="socials-marquee" aria-hidden="true">
+      <div class="socials-marquee-track">
+        <span class="socials-marquee-group">Instagram • TikTok • X • SoundCloud • Facebook • Discord • Twitch • YouTube&nbsp;•&nbsp;</span>
+        <span class="socials-marquee-group">Instagram • TikTok • X • SoundCloud • Facebook • Discord • Twitch • YouTube&nbsp;•&nbsp;</span>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="socials-grid reveal">
+        <a href="https://www.instagram.com/pocketjokers?igsh=dzV0cjFyZmQyajMx" target="_blank" rel="noopener noreferrer" class="social-card instagram">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </span>
+          <span class="social-card-name">Instagram</span>
+          <span class="social-card-handle">@pocketjokers</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@pocketjokers1" target="_blank" rel="noopener noreferrer" class="social-card tiktok">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 448 512" fill="currentColor"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/></svg>
+          </span>
+          <span class="social-card-name">TikTok</span>
+          <span class="social-card-handle">@pocketjokers1</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="https://x.com/PocketJokers1" target="_blank" rel="noopener noreferrer" class="social-card x">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+          </span>
+          <span class="social-card-name">X</span>
+          <span class="social-card-handle">@PocketJokers1</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="https://soundcloud.com/pocketjokers" target="_blank" rel="noopener noreferrer" class="social-card soundcloud">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.175 12.225c-.092 0-.167.075-.167.167v4.616c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167v-4.616c0-.092-.075-.167-.167-.167H1.175Zm1.618-1.503c-.092 0-.167.075-.167.167v6.119c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167v-6.119c0-.092-.075-.167-.167-.167h-.084Zm1.618-1.127c-.092 0-.167.075-.167.167v7.246c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V9.762c0-.092-.075-.167-.167-.167h-.084Zm1.618-1.378c-.092 0-.167.075-.167.167v8.624c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V8.384c0-.092-.075-.167-.167-.167h-.084ZM7.647 6.63c-.092 0-.167.075-.167.167v10.378c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V6.797c0-.092-.075-.167-.167-.167h-.084ZM9.265 5.502c-.092 0-.167.075-.167.167v11.506c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V5.669c0-.092-.075-.167-.167-.167h-.084Zm1.618-.877c-.092 0-.167.075-.167.167v12.383c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V4.792c0-.092-.075-.167-.167-.167h-.084Zm1.618 1.629c-.092 0-.167.075-.167.167v10.754c0 .092.075.167.167.167h.084c.092 0 .167-.075.167-.167V6.421c0-.092-.075-.167-.167-.167h-.084ZM23.834 11.85A4.667 4.667 0 0 0 19.332 7.5a4.706 4.706 0 0 0-4.881 2.375V17.06h9.056c.18 0 .326-.146.326-.326v-4.884Z"/></svg>
+          </span>
+          <span class="social-card-name">SoundCloud</span>
+          <span class="social-card-handle">@pocketjokers</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="https://www.facebook.com/share/18XDzCTHQ2/" target="_blank" rel="noopener noreferrer" class="social-card facebook">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </span>
+          <span class="social-card-name">Facebook</span>
+          <span class="social-card-handle">Pocket Jokers</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="https://discord.gg/CRYmERxPZ" target="_blank" rel="noopener noreferrer" class="social-card discord">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+          </span>
+          <span class="social-card-name">Discord</span>
+          <span class="social-card-handle">Dołącz na serwer</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="https://twitch.tv/pocketjokers1" target="_blank" rel="noopener noreferrer" class="social-card twitch">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
+          </span>
+          <span class="social-card-name">Twitch</span>
+          <span class="social-card-handle">@pocketjokers1</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="https://youtube.com/@pocketjokers10?si=IAt3FICZA2JHA5US" target="_blank" rel="noopener noreferrer" class="social-card youtube">
+          <span class="social-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#050505"/></svg>
+          </span>
+          <span class="social-card-name">YouTube</span>
+          <span class="social-card-handle">@pocketjokers10</span>
+          <svg class="social-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -117,8 +176,10 @@
           </p>
           <div class="genre-tags reveal reveal-delay-3">
             <span class="genre-tag">Alternative Rock</span>
+            <span class="genre-tag">Experimental</span>
             <span class="genre-tag">Electro</span>
             <span class="genre-tag">Rock</span>
+            <span class="genre-tag">Rap</span>
           </div>
         </div>
       </div>
@@ -238,16 +299,16 @@
             </div>
           </div>
 
-          <div class="track-item" data-src="assets/Jak_Sie_Slizgasz_To_Sie_Slizgasz.mp3" data-title="Jak Śię Ślizgasz To Się Ślizgasz 2" data-number="05">
+          <div class="track-item" data-src="assets/Jak_Sie_Slizgasz_To_Sie_Slizgasz.mp3" data-title="Jak Się Ślizgasz To Się Ślizgasz" data-number="05">
             <div class="col-num">
               <span class="track-item-number">5</span>
-              <button class="track-item-play" aria-label="Odtwórz Jak Śię Ślizgasz To Się Ślizgasz">
+              <button class="track-item-play" aria-label="Odtwórz Jak Się Ślizgasz To Się Ślizgasz">
                 <svg viewBox="0 0 24 24" class="icon-play"><polygon points="5,3 19,12 5,21"/></svg>
               </button>
               <div class="track-equalizer"><span></span><span></span><span></span></div>
             </div>
             <div class="col-title">
-              <span class="track-item-title-text">Jak Śię Ślizgasz To Się Ślizgasz</span>
+              <span class="track-item-title-text">Jak Się Ślizgasz To Się Ślizgasz</span>
             </div>
             <div class="col-dur">
               <a href="assets/Jak_Sie_Slizgasz_To_Sie_Slizgasz.mp3" download class="track-item-download" aria-label="Pobierz" title="Pobierz">
@@ -295,6 +356,7 @@
             </div>
           </div>
         </div>
+      </div>
     </div>
   </section>
 
@@ -614,7 +676,10 @@
             </div>
             <div>
               <h4 class="contact-card-title">Menadżer</h4>
-              <p class="contact-card-text">Jewish Jacob — koncerty, kolaboracje</p>
+              <p class="contact-card-text">
+                Jewish Jacob — koncerty, kolaboracje<br>
+                <a href="mailto:manager@pocketjokers.pl">manager@pocketjokers.pl</a>
+              </p>
             </div>
           </div>
 
