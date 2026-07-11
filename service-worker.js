@@ -1,10 +1,13 @@
-const CACHE_NAME = 'pocket-jokers-cache-v10';
+const CACHE_NAME = 'pocket-jokers-cache-v11';
 const urlsToCache = [
   './',
   './index.html',
   './css/style.css',
   './js/main.js',
-  './assets/icon.svg',
+  './assets/icon-32.png',
+  './assets/icon-180.png',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
   './assets/album-cover.png',
   './assets/Sprytne_Sniadanka_Intro.mp3',
   './assets/Dumbo.mp3',
@@ -20,7 +23,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache V10');
+        console.log('Opened cache V11');
         return cache.addAll(urlsToCache);
       })
   );

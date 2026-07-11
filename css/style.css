@@ -1205,26 +1205,6 @@ section {
   position: relative;
 }
 
-/* right-edge fade to signal there's more to scroll */
-.episodes-viewport::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 56px;
-  pointer-events: none;
-  background: linear-gradient(to right, transparent, rgba(5, 5, 5, 0.85));
-  z-index: 3;
-}
-
-/* Na wąskich ekranach karta zajmuje niemal całą szerokość —
-   szeroki fade zasłaniałby tekst opisów */
-@media (max-width: 768px) {
-  .episodes-viewport::after {
-    width: 20px;
-    background: linear-gradient(to right, transparent, rgba(5, 5, 5, 0.7));
-  }
-}
-
 .episodes-container {
   display: flex;
   align-items: flex-start;
