@@ -27,8 +27,8 @@
   <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
     <div class="navbar-inner">
-      <a href="#hero" class="nav-logo">
-        Pocket Jokers
+      <a href="#hero" class="nav-logo" aria-label="Pocket Jokers — przewiń na górę">
+        <img src="assets/logotypPion.png" alt="Pocket Jokers" class="nav-logo-img">
       </a>
       <div class="nav-links">
         <a href="#hero" class="active">Start</a>
@@ -58,9 +58,8 @@
   <!-- HERO -->
   <section class="hero" id="hero">
     <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="line top">Pocket</span>
-        <span class="line bottom">Jokers</span>
+      <h1 class="hero-title hero-title--logo">
+        <img src="assets/logo-pelne.png" alt="Pocket Jokers" class="hero-logo">
       </h1>
 
       <button type="button" id="hero-cue" class="hero-cue" aria-label="Posłuchaj naszej muzyki">
@@ -162,17 +161,16 @@
   <!-- ABOUT -->
   <section class="about" id="about">
     <div class="container">
-      <div class="about-grid">
-        <div class="about-image reveal">
-          <img src="assets/album-cover.png" alt="Pocket Jokers — okładka Pocket Jokers">
+      <div class="about-grid about-grid--panel reveal">
+        <div class="about-sygnet">
+          <img src="assets/sygnet.png" alt="" class="about-sygnet-img">
         </div>
-        <div class="about-text">
-          <h2 class="reveal reveal-delay-1">Pocket Jokers</h2>
+        <div class="about-text about-text--bare">
+          <h2 class="about-wordmark reveal reveal-delay-1">
+            <img src="assets/logotypPion.png" alt="Pocket Jokers">
+          </h2>
           <p class="reveal reveal-delay-2">
             Projekt artystyczny założony przez dwójkę przyjaciół, łączący eksperymentalną muzykę z modą oraz innymi formami sztuki.
-          </p>
-          <p class="reveal reveal-delay-3">
-            Na scenie dajemy z siebie wszystko — każdy występ to energia, improwizacja i kontakt z publicznością.
           </p>
           <div class="genre-tags reveal reveal-delay-3">
             <span class="genre-tag">Alternative Rock</span>
@@ -730,9 +728,9 @@
       <span class="full-player-header-title">Odtwarzanie</span>
     </div>
     
-    <div class="full-player-cover">
+    <div class="full-player-cover full-player-cover--logo">
       <div class="cover-wrapper">
-        <img src="assets/album-cover.png" alt="Okładka Pocket Jokers">
+        <img src="assets/sygnet.png" alt="">
       </div>
     </div>
 
@@ -787,7 +785,7 @@
     </div>
     <div class="sticky-player-inner">
       <div class="sticky-player-info" id="sticky-player-info" title="Rozwiń odtwarzacz">
-        <span class="sticky-player-live" aria-hidden="true"></span>
+        <img src="assets/sygnet.png" alt="" class="sticky-player-live" aria-hidden="true">
         <div class="sticky-player-meta">
           <h4 class="sticky-player-title">Wybierz utwór</h4>
           <span class="sticky-player-artist">Pocket Jokers</span>

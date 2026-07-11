@@ -130,12 +130,25 @@ body::before {
 }
 
 .nav-logo {
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  /* Ukryty na górze (hero); pojawia się po zescrollowaniu */
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+  pointer-events: none;
+}
+
+.navbar.scrolled .nav-logo {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.nav-logo-img {
+  height: 20px;
+  width: auto;
+  display: block;
 }
 
 .nav-logo .highlight {
@@ -1774,13 +1787,12 @@ body.has-sticky-player .back-to-top {
 
 /* "Now playing" dot — scales and glows with the bass */
 .sticky-player-live {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: auto;
+  height: 32px;
   flex-shrink: 0;
-  background: var(--white);
-  box-shadow: 0 0 calc(4px + 12px * var(--level)) rgba(255, 255, 255, calc(0.45 + 0.5 * var(--level)));
-  transform: scale(calc(1 + 0.5 * var(--level)));
+  object-fit: contain;
+  filter: drop-shadow(0 0 calc(3px + 9px * var(--level)) rgba(255, 255, 255, calc(0.3 + 0.5 * var(--level))));
+  transform: scale(calc(1 + 0.16 * var(--level)));
   transition: transform 0.08s linear;
 }
 
@@ -2337,4 +2349,104 @@ body.has-sticky-player .back-to-top {
   .contact-info {
     align-items: stretch;
   }
+}
+
+/* ══════════════════════════════════════════
+   BRAND LOGO — hero / about / playery
+   Białe, przezroczyste assety na ciemnym tle.
+   ══════════════════════════════════════════ */
+
+/* Hero — pełne logo zamiast tytułu tekstowego */
+.hero-title--logo {
+  line-height: 0;
+}
+
+.hero-logo {
+  display: block;
+  width: min(390px, 92vw);
+  height: auto;
+  margin: 0 auto;
+  animation: heroTitleIn 0.95s var(--ease) backwards;
+}
+
+/* O nas — jeden glassy panel: sygnet + wordmark + tekst */
+.about-grid--panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 3.5rem;
+  gap: 3rem;
+}
+
+/* wewnątrz panelu tekst nie ma już własnego szkła */
+.about-grid--panel .about-text {
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.about-sygnet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-sygnet-img {
+  width: auto;
+  max-width: min(230px, 70%);
+  height: auto;
+}
+
+.about-wordmark {
+  max-width: 300px;
+  margin-bottom: 1.6rem;
+}
+
+.about-wordmark img {
+  width: 100%;
+  height: auto;
+}
+
+/* Pełnoekranowy player — sygnet bez albumowej ramki/shimmera */
+.full-player-cover--logo .cover-wrapper {
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  background: none;
+}
+
+.full-player-cover--logo .cover-wrapper::after {
+  display: none;
+}
+
+.full-player.is-playing .full-player-cover--logo .cover-wrapper {
+  box-shadow: none;
+}
+
+.full-player-cover--logo img {
+  max-width: min(300px, 66%);
+  max-height: 100%;
+  margin: 0 auto;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.45));
+  transition: filter 0.5s var(--ease);
+}
+
+.full-player.is-playing .full-player-cover--logo img {
+  filter: drop-shadow(0 0 34px rgba(255, 255, 255, 0.28));
+}
+
+/* O nas — panel responsywnie */
+@media (max-width: 1024px) {
+  .about-grid--panel { padding: 2.5rem; gap: 2rem; }
+  .about-grid--panel .about-wordmark { margin-left: auto; margin-right: auto; }
+}
+
+@media (max-width: 768px) {
+  .about-grid--panel { padding: 2rem 1.5rem; }
+  .about-sygnet-img { max-width: min(200px, 58%); }
 }
