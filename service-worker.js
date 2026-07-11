@@ -1,21 +1,26 @@
-const CACHE_NAME = 'pocket-jokers-cache-v11';
+const CACHE_NAME = 'pocket-jokers-cache-v12';
+// Pre-cache obejmuje tylko lekki "shell" strony (HTML/CSS/JS/loga/fonty).
+// MP3 celowo NIE są na liście — pre-cache ~48 MB audio przy pierwszej
+// wizycie zżerał transfer odwiedzających (mobile!) i limit GitHub Pages.
+// Audio i tak trafia do cache przy pierwszym odtworzeniu, bo handler
+// fetch poniżej dopisuje każdą pobraną odpowiedź (runtime caching).
 const urlsToCache = [
   './',
   './index.html',
   './css/style.css',
   './js/main.js',
+  './manifest.json',
   './assets/icon-32.png',
   './assets/icon-180.png',
   './assets/icon-192.png',
   './assets/icon-512.png',
-  './assets/album-cover.png',
-  './assets/Sprytne_Sniadanka_Intro.mp3',
-  './assets/Dumbo.mp3',
-  './assets/Harvest_Fest.mp3',
-  './assets/Hill_Climb_Racing_(im_touching_this_guy).mp3',
-  './assets/Jak_Sie_Slizgasz_To_Sie_Slizgasz.mp3',
-  './assets/Never_Past_Bedtime.mp3',
-  './assets/Pocket_Jokers.mp3'
+  './assets/logo-pelne.png',
+  './assets/logotypPion.png',
+  './assets/sygnet.png',
+  './assets/fonts/syne-latin.woff2',
+  './assets/fonts/syne-latin-ext.woff2',
+  './assets/fonts/space-grotesk-latin.woff2',
+  './assets/fonts/space-grotesk-latin-ext.woff2'
 ];
 
 self.addEventListener('install', event => {
@@ -23,7 +28,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache V11');
+        console.log('Opened cache', CACHE_NAME);
         return cache.addAll(urlsToCache);
       })
   );

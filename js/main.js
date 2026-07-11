@@ -672,14 +672,16 @@ class TrackPlayer {
 
     // Bass-reactive glow level (0..1) fed to the sticky player via a CSS var.
     this._level = 0;
+    this._levelRaf = null;
     this.reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     this.bindEvents();
-    if (!this.reduceMotion) this.updateLevel();
   }
 
   // Smoothly track the bass and expose it as --level on the sticky player so
   // the progress bar and accents can pulse with the music (CSS does the rest).
+  // Pętla rAF startuje w zdarzeniu 'play' i sama gaśnie, gdy po pauzie
+  // poświata zjedzie do zera — nie kręci się bez końca, gdy nic nie gra.
   updateLevel() {
     let target = 0;
     if (this.analyzer && this.freqData && this.audio && !this.audio.paused) {
@@ -692,7 +694,19 @@ class TrackPlayer {
     if (this.stickyPlayer) {
       this.stickyPlayer.style.setProperty('--level', this._level.toFixed(3));
     }
-    requestAnimationFrame(() => this.updateLevel());
+    const playing = this.audio && !this.audio.paused;
+    if (playing || this._level > 0.005) {
+      this._levelRaf = requestAnimationFrame(() => this.updateLevel());
+    } else {
+      this._level = 0;
+      if (this.stickyPlayer) this.stickyPlayer.style.setProperty('--level', '0');
+      this._levelRaf = null;
+    }
+  }
+
+  startLevelLoop() {
+    if (this.reduceMotion || this._levelRaf !== null) return;
+    this._levelRaf = requestAnimationFrame(() => this.updateLevel());
   }
 
   initAudioContext() {
@@ -1011,6 +1025,7 @@ class TrackPlayer {
       });
 
       this.audio.addEventListener('play', () => {
+        this.startLevelLoop();
         if (this.fullPlayer) this.fullPlayer.classList.add('is-playing');
         if (this.currentTrack) {
           this.setIcon(this.currentTrack, 'pause');

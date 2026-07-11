@@ -7,7 +7,7 @@
   <meta name="keywords" content="Pocket Jokers, zespół muzyczny, alternative rock, electro, Kraków">
   <meta name="author" content="Pocket Jokers">
   <meta name="theme-color" content="#050505">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://formsubmit.co; frame-src 'self' https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self' https://formsubmit.co; frame-src 'self' https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
   <title>Pocket Jokers</title>
 
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
@@ -687,6 +687,10 @@
         <div class="reveal reveal-delay-2">
             <form class="contact-form" id="contact-form" action="https://formsubmit.co/6fc1e366ef412d7b733330595d48f453" method="POST">
             <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_subject" value="Nowa wiadomość ze strony pocketjokers.pl">
+            <!-- Honeypot: pole niewidoczne dla ludzi; boty je wypełniają
+                 i FormSubmit odrzuca takie zgłoszenia -->
+            <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
             <div class="form-group">
               <label class="form-label" for="name">Imię</label>
               <input type="text" class="form-input" id="name" name="name" placeholder="Jan Kowalski" required>

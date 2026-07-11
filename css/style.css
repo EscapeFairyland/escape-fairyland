@@ -2,7 +2,46 @@
    POCKET JOKERS
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* ── Fonty (self-hosted, variable woff2) ──
+   Zamiast @import z Google Fonts: bez łańcucha blokującego render
+   (HTML → CSS → CSS Google → woff2) i bez wysyłania IP odwiedzających do
+   Google (RODO). Dzięki unicode-range przeglądarka pobiera subset latin-ext
+   tylko wtedy, gdy na stronie są polskie znaki. */
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../assets/fonts/syne-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../assets/fonts/syne-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/space-grotesk-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/space-grotesk-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 /* ── Variables ── */
 :root {
@@ -11,6 +50,10 @@
   /* Ciemne "dymne szkło" — przyciemnia animowane tło pod tekstem paneli */
   --bg-card: rgba(10, 10, 10, 0.6);
   --bg-panel: rgba(8, 8, 8, 0.55);
+  /* Wariant bez backdrop-filter dla drobnych kart — blur nad canvasem
+     animowanym co klatkę jest re-liczony przez GPU przy każdej klatce,
+     więc małe elementy dostają ciemniejsze tło zamiast szkła */
+  --bg-card-flat: rgba(10, 10, 10, 0.8);
   --border: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.18);
 
@@ -209,9 +252,9 @@ body::before {
   top: 0; left: 0;
   width: 100%; height: 100vh;
   height: 100dvh;
+  /* Tło jest niemal nieprzezroczyste (0.98) — blur pod spodem był
+     niewidoczny, a kosztował GPU przy otwartym menu */
   background: rgba(3, 3, 3, 0.98);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   z-index: 999;
   flex-direction: column;
   align-items: center;
@@ -515,9 +558,7 @@ section {
   flex-direction: column;
   gap: 0.3rem;
   padding: 1.4rem 1.4rem 1.3rem;
-  background: var(--bg-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--bg-card-flat);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -801,9 +842,7 @@ section {
 }
 
 .member-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--bg-card-flat);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 1.75rem;
@@ -819,8 +858,6 @@ section {
   height: 60px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -1257,9 +1294,7 @@ section {
   padding-top: 56.25%; /* 16:9 Aspect Ratio */
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--bg-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--bg-card-flat);
   border: 1px solid var(--border);
   transition: border-color 0.3s var(--ease);
 }
@@ -1396,9 +1431,7 @@ section {
 }
 
 .contact-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--bg-card-flat);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 1.25rem 1.5rem;
@@ -1509,8 +1542,6 @@ section {
   width: 100%;
   padding: 0.75rem 1rem;
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--white);
@@ -2429,4 +2460,37 @@ body.has-sticky-player .back-to-top {
 @media (max-width: 768px) {
   .about-grid--panel { padding: 2rem 1.5rem; }
   .about-sygnet-img { max-width: min(200px, 58%); }
+}
+
+/* ══════════════════════════════════════════
+   MOBILE: bez backdrop-filter
+   Canvas w tle przerysowuje się co klatkę, więc GPU musi re-blurować
+   każdy szklany panel przy każdej klatce — na telefonach to główne
+   źródło ścinek i grzania. Duże panele dostają solidniejsze tło,
+   czytelność zostaje. (Navbar zostawiamy — to wąski pasek.)
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .about-text,
+  .podcasts-header,
+  .contact-header,
+  .about-grid--panel,
+  .track-list-wrapper,
+  .contact-form {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(8, 8, 8, 0.88);
+  }
+
+  .sticky-player {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(5, 5, 5, 0.96);
+  }
+
+  .hero-cue,
+  .volume-slider-popup,
+  .volume-slider-popup::after {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
